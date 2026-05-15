@@ -1,8 +1,8 @@
 import React from 'react';
 import { HeroSection } from './HeroSection';
 import StatCardSection from './StatCardSection';
-import { TeamOverview } from './TeamOverview';
-import { ServicesOverview } from './ServicesOverview';
+import TeamSection from './TeamSection';
+import BusinessSection from './BusinessSection';
 import { ValueComparison } from './ValueComparison';
 import { CtaSection } from './CtaSection';
 
@@ -11,8 +11,8 @@ export default function HomePage() {
     <div className="relative">
       <HeroSection />
       <StatCardSection />
-      <TeamOverview />
-      <ServicesOverview />
+      <TeamSection />
+      <BusinessSection />
       <ValueComparison />
       <CtaSection />
     </div>

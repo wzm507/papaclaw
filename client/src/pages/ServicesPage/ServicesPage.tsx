@@ -1,292 +1,592 @@
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ZapIcon, GlobeIcon, CompassIcon, Building2Icon, WalletIcon, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Zap, Globe, Compass, Building2, Wallet, CheckCircle, ArrowRight, Sparkles, TrendingUp, Shield, Clock, X, Star } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 
-const fadeInUp = {
-  hidden: { opacity: 0, y: 24 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.5, ease: 'easeOut' },
-  },
-};
+interface IProduct {
+  id: string;
+  name: string;
+  price: string;
+  description: string;
+  features: string[];
+  highlight?: boolean;
+  details?: string;
+  delivery?: string;
+  scenarios?: string[];
+}
 
-interface IBusinessBlock {
+interface IBusinessTab {
   id: string;
   icon: React.ReactNode;
   label: string;
   title: string;
   subtitle: string;
-  goldenQuote: string;
-  goldenQuoteEn: string;
-  painPoint?: string;
-  steps: { title: string; desc: string }[];
-  dataAnchors?: { label: string; value: string }[];
-  regions?: string[];
+  description: string;
+  philosophy: string;
+  products: IProduct[];
+  benefits: { icon: React.ReactNode; title: string; desc: string }[];
 }
 
-const businesses: IBusinessBlock[] = [
+const tabs: IBusinessTab[] = [
   {
     id: 'vibe-marketing',
-    icon: <ZapIcon className="w-5 h-5" />,
+    icon: <Zap className="w-5 h-5" />,
     label: 'VIBE MARKETING',
-    title: '让品牌成为文化，而不是广告',
-    subtitle: '不是让用户觉得"被营销了"，是让他们觉得"这个品牌懂我"。',
-    goldenQuote: 'Don\'t sell. Resonate.',
-    goldenQuoteEn: '',
-    painPoint: '传统出海营销 = 翻译国内物料 + 投放海外广告。用户一眼就知道你在卖东西，然后划走。',
-    steps: [
+    title: '出海媒体',
+    subtitle: '让品牌成为文化，而不是广告',
+    description: 'AI数据驱动原生内容，拒绝生硬翻译广告。从账号定位、平台搭建到内容策划、引流转化，一站式解决企业海外品牌常态化运营、获客难题。',
+    philosophy: '不是让用户觉得"被营销了"，是让他们觉得"这个品牌懂我"。',
+    benefits: [
+      { icon: <Sparkles className="w-5 h-5" />, title: 'AI内容量产', desc: '多语种本土化内容快速产出' },
+      { icon: <TrendingUp className="w-5 h-5" />, title: '精准投放', desc: '数据驱动优化投放效果' },
+      { icon: <Clock className="w-5 h-5" />, title: '快速落地', desc: '48小时内容从脚本到上线' },
+    ],
+    products: [
       {
-        title: 'AI 抓取目标市场热门内容，找到情绪入口',
-        desc: '每天分析 TikTok、YouTube、Instagram 上的爆款视频和帖子，找出目标市场的消费者在讨论什么、焦虑什么、喜欢什么。不是猜，是数据告诉的。',
+        id: 'vibe-1',
+        name: '海外新媒体全案运营策划',
+        price: '3000元/份',
+        description: '账号定位、平台搭建、内容策划全套方案',
+        features: ['账号定位分析', '平台搭建指导', '内容策划方案', '引流转化策略', '执行排期规划', '1次免费答疑'],
+        details: '针对零基础出海企业，提供从0到1的海外社媒运营落地方案。包含目标市场分析、平台选择建议、内容定位策略、账号搭建指南、运营执行排期表等全套资料。',
+        delivery: '交付形式：PDF方案文档+1次1小时在线答疑',
+        scenarios: ['企业首次出海', '海外社媒起步', '品牌出海初期'],
       },
       {
-        title: 'AIGC 导演 + 本地化团队创作原生内容',
-        desc: '不找外包。自己的导演和剪辑师基于数据写脚本、做内容。一条视频从脚本到上线 48 小时。',
+        id: 'vibe-2',
+        name: '企业社媒全域全包运营',
+        price: '80000元/月 | 600000元/年',
+        description: '自选3平台托管，AIGC内容量产+投放优化',
+        features: ['多平台托管', 'AIGC内容', '投放优化', '询盘转化', '月度复盘'],
+        highlight: true,
+        details: '全团队全职落地服务，客户可从TikTok、LinkedIn、Facebook、Instagram、小红书、抖音、视频号中自选3个平台自由组合托管。包含AIGC原创本土化多语种内容量产、本地文化适配运营、精准投放优化、询盘主动转化、粉丝社群运维、周/月度数据深度复盘迭代。',
+        delivery: '交付形式：每日内容产出、每周数据周报、每月深度复盘、专属对接群',
+        scenarios: ['品牌出海常态化运营', '海外获客需求', '多平台矩阵运营'],
       },
       {
-        title: '全平台投放 + 每周数据复盘',
-        desc: 'Google、Meta、TikTok 同步跑。每周看：什么素材跑得动、什么文案转化高、什么时候该砍掉。不是一套内容用到死。',
+        id: 'vibe-3',
+        name: '商业PPT定制',
+        price: '180元/页',
+        description: '路演/融资/招商/政企汇报场景',
+        features: ['品牌逻辑梳理', '中英/阿语双语排版', '视觉设计', '定稿交付'],
+        details: '专业PPT设计服务，覆盖路演、融资、招商、政企汇报等多种场景。包含品牌逻辑梳理、内容结构优化、专业视觉设计、中英或中阿双语排版。',
+        delivery: '交付形式：PPT源文件+PDF版本',
+        scenarios: ['融资路演', '招商宣讲', '政企汇报', '项目推介'],
+      },
+      {
+        id: 'vibe-4',
+        name: '品牌官网定制',
+        price: '25000元/站点',
+        description: '海外服务器部署+多语种适配+SEO优化',
+        features: ['海外服务器部署', '多语种适配', 'SEO优化', '品牌视觉设计', '后台操作教学', '1年免费维护'],
+        details: '企业海外官方门面搭建，包含海外服务器部署、多语种适配、SEO优化、品牌视觉设计、后台操作培训、1年免费技术维护。',
+        delivery: '交付形式：上线网站+后台培训+1年维护服务',
+        scenarios: ['企业品牌出海', '海外市场推广', '提升品牌公信力'],
       },
     ],
   },
   {
     id: 'cross-border',
-    icon: <GlobeIcon className="w-5 h-5" />,
+    icon: <Globe className="w-5 h-5" />,
     label: 'CROSS-BORDER INTELLIGENCE',
-    title: '全世界的采购需求，我们帮你找到',
-    subtitle: '不是等你去找客户，是客户来找你。',
-    goldenQuote: '数据告诉你市场在哪里，我们帮你把订单拿回来。',
-    goldenQuoteEn: 'Not just data. Revenue.',
-    steps: [
+    title: '跨境智库',
+    subtitle: '全世界的采购需求，我们帮你找到',
+    description: 'AI24小时抓取全球商机，不靠人工盲目筛选。从标讯抓取、商机匹配到标书代投、市场评估，帮客户盯订单、拿商机。',
+    philosophy: '不是等客户找你，是客户来找你。',
+    benefits: [
+      { icon: <Clock className="w-5 h-5" />, title: '实时抓取', desc: 'AI全天候自动扫描全球标讯' },
+      { icon: <Sparkles className="w-5 h-5" />, title: '精准匹配', desc: '按行业/地区/金额智能筛选' },
+      { icon: <Shield className="w-5 h-5" />, title: '落地跟进', desc: '从投标到订单全程服务' },
+    ],
+    products: [
       {
-        title: '每天自动扫，比你先知道谁要买东西',
-        desc: '覆盖全球主要政府采购网、招标平台、国际贸易数据库。AI 24 小时不间断抓取，按行业、地区、金额自动分类筛选。不用你盯着，我们帮你盯着。',
+        id: 'cross-1',
+        name: '全球标书精准匹配服务',
+        price: '99元/次',
+        description: '1个工作日筛选3条7日内真实标讯',
+        features: ['精准匹配', '15分钟投标指导'],
+        details: '超低门槛体验精准商机服务，AI智能筛选与企业匹配度最高的全球标讯，帮助企业快速了解海外投标市场。',
+        delivery: '交付形式：标讯清单+15分钟一对一投标指导',
+        scenarios: ['初次尝试海外投标', '市场调研'],
       },
       {
-        title: '匹配到你的企业，包装好材料去投标',
-        desc: '找到需求只是第一步。根据招标方的具体要求——资质、技术参数、报价、交付周期——帮你做一整套投标材料：中文/阿拉伯语/英语标书、企业资质包装、产品方案书。不是给你一堆数据让你自己搞，是帮你把标投出去。',
+        id: 'cross-2',
+        name: 'AI标书年度代投服务',
+        price: '39800元/年',
+        description: 'AI全天候抓取+每日推送+全程投标',
+        features: ['每日推送', '资质审核', '标书包装', '投标跟进'],
+        highlight: true,
+        details: '全年托管式投标服务，AI全天候抓取全球标讯，每日精准推送匹配商机，专业团队负责资质审核、标书包装、全程投标跟进。',
+        delivery: '交付形式：每日标讯推送、标书制作、投标跟进、中标结果反馈',
+        scenarios: ['长期海外投标需求', '政企订单拓展'],
       },
       {
-        title: '中标后全程跟进，帮你把订单真正落地',
-        desc: '合同谈判、样品寄送、生产排期、物流协调、跨境结算——有人全程跟进。不是投完标就结束，是帮你把这笔钱收到账上。',
+        id: 'cross-3',
+        name: '单份标书撰写+代办',
+        price: '9800元/单',
+        description: '多语种标书定制+材料包装+投标代办',
+        features: ['多语种标书', '材料包装', '全程跟进', '中标后3%服务费'],
+        details: '针对单次投标需求的专业服务，包含多语种标书定制、投标材料包装优化、投标流程代办、全程跟进答疑。中标后仅收取中标金额3%服务费，未中标无任何额外费用。',
+        delivery: '交付形式：标书文件+投标跟进服务',
+        scenarios: ['单次海外投标', '特定项目投标'],
       },
     ],
   },
   {
     id: 'strategic',
-    icon: <CompassIcon className="w-5 h-5" />,
+    icon: <Compass className="w-5 h-5" />,
     label: 'STRATEGIC ADVISORY',
-    title: '从诊断到落地，步步有据可依',
-    subtitle: '不是拍脑袋做判断，是数据 + 行家 + 本地人，三方验证。',
-    goldenQuote: '不是一份报告就结束，是持续迭代的出海战友。',
-    goldenQuoteEn: 'Not a one-time report. An ongoing partnership.',
-    steps: [
-      {
-        title: '数据打底，先看清市场再动手',
-        desc: 'AI 分析目标市场的行业数据、竞品格局、消费者行为趋势。不是泛泛的"这个市场很大"，是具体到"你的产品在哪个细分赛道有机会、机会多大、对手是谁"。',
-      },
-      {
-        title: '行业专家入场，验证方向对不对',
-        desc: '帮你联系这个赛道里真正干过的人——做过同类产品的、踩过同类坑的、在目标市场拿过结果的。听听过来人怎么说，比看十份报告都有用。',
-      },
-      {
-        title: '本地专家落地，确保方案不是空中楼阁',
-        desc: '目标市场当地的从业者、渠道商、政策专家——帮你验证方案在当地能不能落地、会不会踩雷、该怎么调整。AI 告诉你该去哪，本地人告诉你该怎么走。',
-      },
+    title: '品牌战略咨询',
+    subtitle: '从诊断到落地，步步有据可依',
+    description: '不靠拍脑袋决策，以数据+行业行家+本地专家三方验证，做可持续落地的出海规划。',
+    philosophy: '不是一份报告就结束，是持续迭代的出海战友。',
+    benefits: [
+      { icon: <Sparkles className="w-5 h-5" />, title: '数据打底', desc: 'AI分析市场数据与竞品格局' },
+      { icon: <TrendingUp className="w-5 h-5" />, title: '专家验证', desc: '行业行家+本地专家双重把关' },
+      { icon: <Clock className="w-5 h-5" />, title: '持续迭代', desc: '月度执行计划+周度复盘优化' },
     ],
-    dataAnchors: [
-      { label: '诊断', value: '数据扫描 + 专家验证，确认市场机会和切入点' },
-      { label: '规划', value: '目标市场选择 + 渠道策略 + 品牌出海路线图' },
-      { label: '落地', value: '月度执行计划 + 周度复盘 + 根据最新数据持续调整方向' },
+    products: [
+      {
+        id: 'strat-1',
+        name: '海外市场准入快速评估',
+        price: '199元/份',
+        description: '市场分析+关税核查+风险预警',
+        features: ['市场分析', '关税核查', '风险预警', '15分钟答疑'],
+        details: '低成本快速评估海外市场准入可行性，包含目标市场分析、关税资质核查、风险预警、落地建议。',
+        delivery: '交付形式：PDF评估报告+15分钟专属答疑',
+        scenarios: ['市场调研', '出海决策参考'],
+      },
+      {
+        id: 'strat-2',
+        name: '企业出海全域战略咨询',
+        price: '按需定制',
+        description: '市场诊断+赛道卡位+落地路线图',
+        features: ['市场诊断', '赛道卡位', '竞品分析', '落地路线图'],
+        highlight: true,
+        details: '专家+本地团队双护航的定制化战略咨询服务，包含市场诊断、赛道卡位分析、竞品分析、合规风控、落地路线图、月度执行计划、周度复盘迭代。',
+        delivery: '交付形式：战略方案+月度跟进+周度复盘',
+        scenarios: ['企业出海战略规划', '海外市场拓展'],
+      },
     ],
   },
   {
     id: 'government',
-    icon: <Building2Icon className="w-5 h-5" />,
+    icon: <Building2 className="w-5 h-5" />,
     label: 'GOVERNMENT & ENTERPRISE',
-    title: '政策不是障碍，是加速器',
-    subtitle: '政策红利不是天上掉下来的，是有人知道去哪拿、怎么拿、拿多少。',
-    goldenQuote: '政策就在那里，但知道怎么拿的人不多。',
-    goldenQuoteEn: 'Policy is an accelerator — if you know who to ask.',
-    steps: [
+    title: '政企资源对接',
+    subtitle: '政策是加速器，不是障碍',
+    description: '南沙-港澳-海外全域政企资源对接，合规准入+政策申报+政企订单对接，帮企业精准吃透所有合规红利。',
+    philosophy: '政策红利不是天上掉下来的，是有人知道去哪拿、怎么拿、拿多少。',
+    benefits: [
+      { icon: <Sparkles className="w-5 h-5" />, title: '政策梳理', desc: 'AI筛查+人工核验全维度政策' },
+      { icon: <Shield className="w-5 h-5" />, title: '零风险申报', desc: '到账后才收费，失败不花钱' },
+      { icon: <Globe className="w-5 h-5" />, title: '全球对接', desc: '覆盖中东/东南亚/非洲/葡语系国家' },
+    ],
+    products: [
       {
-        title: '在南沙，帮你拿政策红利和政企订单',
-        desc: '双 15% 税优、算力补贴 30%、港澳人才个税补贴——政策写在那里，但没人帮你申报就等于没有。',
+        id: 'gov-1',
+        name: '企业专属政策红利梳理',
+        price: '299元/份',
+        description: 'AI筛查+人工核验全维度政策',
+        features: ['政策梳理', '申报条件', '资料清单', '预估金额'],
+        details: '结合企业所属行业、经营地区、企业资质、出海赛道，AI大数据筛查+人工核验，精准梳理企业可申报的国家级/省级/市区级/港澳/南沙全部补贴、税收优惠、人才补贴、算力补贴、出海专项扶持政策。',
+        delivery: '交付形式：PDF政策报告',
+        scenarios: ['政策红利摸底', '企业资质评估'],
       },
       {
-        title: '在港澳，帮你打通资本通道和中葡平台',
-        desc: '香港 QFLP/QDLP 金融通道、金融机构落户奖励最高 1800 万。澳门中葡合作平台——葡语系国家的生意，这是一条别人没有的绿色通道。',
+        id: 'gov-2',
+        name: '政企补贴全程申报代办',
+        price: '结果分成(20%)',
+        description: '前期零预付，到账后才收费',
+        features: ['零预付', '失败不收费', '缺失文件代做'],
+        highlight: true,
+        details: '零风险政策申报服务，前期不收取任何服务费，补贴资金到账后仅收取实际到账金额的20%作为服务费。申报失败不收费。如企业存在资质不全、申报材料缺失等问题，可提供缺失文件专项代做服务。',
+        delivery: '交付形式：申报服务+材料代做',
+        scenarios: ['政策补贴申报', '资质文件准备'],
       },
       {
-        title: '在海外，帮你搞定合规准入和政府关系',
-        desc: '中东、东南亚、非洲、南亚——每个市场政策逻辑不同。合规准入、政府投标、本地牌照、税务规划——有人帮你具体到"这个国家这个行业的这个政策，该怎么走"。',
+        id: 'gov-3',
+        name: '政企出海商务考察',
+        price: '98000元/团',
+        description: '全程地接+官方接待+政企高层拜会',
+        features: ['专业地接', '行程定制', '官方接待', '成果复盘'],
+        details: '一站式海外官方商务合作资源对接服务，包含全程专业地接、行程定制、官方接待、政企高层拜会、外事对接服务、全程翻译、商务座谈、成果复盘总结。',
+        delivery: '交付形式：全程服务+成果报告',
+        scenarios: ['海外商务考察', '政企资源对接'],
       },
     ],
-    regions: ['南沙', '香港', '澳门', '阿联酋', '日本', '新加坡', '泰国', '马来西亚', '越南', '巴基斯坦', '葡语系国家', '非洲多国'],
   },
   {
     id: 'financial',
-    icon: <WalletIcon className="w-5 h-5" />,
+    icon: <Wallet className="w-5 h-5" />,
     label: 'FINANCIAL SERVICES',
-    title: '资本在哪里，品牌就去哪里',
-    subtitle: '出海不是缺产品，是缺让钱转起来的通道。',
-    goldenQuote: '不是帮你省钱，是帮你让钱转起来。',
-    goldenQuoteEn: 'Real financial advantages, not just promises.',
-    steps: [
-      {
-        title: '跨境结算——中科汇智通道，让钱转得快、省得多',
-        desc: '数字人民币跨境、mBridge 通道、非洲创新结算方案。不走传统银行的老路，手续费更低、到账更快、币种更灵活。东南亚、中东、非洲的结算难题，我们有专门方案。',
-      },
-      {
-        title: '供应链金融——用数据做风控，帮你拿到周转资金',
-        desc: '基于企业真实交易数据和订单，匹配供应链金融资源。不是传统抵押贷，是用你的贸易流水和订单做信用背书。解决出海企业最头疼的"有订单、没钱做"的卡点。',
-      },
-      {
-        title: '对接基金——帮好项目找到对的钱',
-        desc: '有规模的出海企业，不是缺钱，是缺对接资本的通道。帮你对接境内外投资机构、产业基金、政府引导基金。QFLP/QDLP 通道全通。',
-      },
+    title: '跨境金融服务',
+    subtitle: '资本在哪里，品牌就去哪里',
+    description: '出海企业不缺订单，缺的是让资金安全、快速流转的通道。从跨境结算、供应链金融到投融资对接，打通出海企业资金全链路。',
+    philosophy: '不是帮你省钱，是帮你让钱转起来。',
+    benefits: [
+      { icon: <TrendingUp className="w-5 h-5" />, title: '低费率结算', desc: '中科汇智通道，支持数字人民币' },
+      { icon: <Shield className="w-5 h-5" />, title: '供应链金融', desc: '真实订单做信用，无抵押融资' },
+      { icon: <Globe className="w-5 h-5" />, title: '资本对接', desc: '海内外产业基金+QFLP/QDLP通道' },
     ],
-    dataAnchors: [
-      { label: '跨境结算', value: '低费率 + 快到账' },
-      { label: '供应链金融', value: '订单做信用' },
-      { label: '基金对接', value: 'QFLP/QDLP 全通' },
+    products: [
+      {
+        id: 'fin-1',
+        name: '融资BP定制服务',
+        price: '19800元/份',
+        description: '国际化双语融资BP定制',
+        features: ['品牌梳理', '财务数据', '双语排版'],
+        details: '针对企业出海融资、项目招商、政企汇报场景，定制专业国际化融资BP，包含品牌梳理、业务架构、商业模式、财务数据、落地规划、优势背书全板块内容，中英文双语排版、商业高级视觉定稿交付。',
+        delivery: '交付形式：PPT源文件+PDF版本',
+        scenarios: ['融资路演', '项目招商', '政企资本对接'],
+      },
+      {
+        id: 'fin-2',
+        name: '跨境合规结算服务',
+        price: '按需适配',
+        description: '专属通道+低费率+快到账',
+        features: ['数字人民币', '低费率', '快到账'],
+        highlight: true,
+        details: '依托中科汇智专属通道，支持数字人民币跨境结算，低费率、快到账，解决中东、东南亚、非洲小众市场结算难题。',
+        delivery: '交付形式：结算通道开通+操作指导',
+        scenarios: ['海外贸易结算', '跨境资金流转'],
+      },
+      {
+        id: 'fin-3',
+        name: '出海供应链金融',
+        price: '按需定制',
+        description: '真实订单信用背书，无抵押融资',
+        features: ['订单融资', '无抵押', '快速放款'],
+        details: '依托企业真实订单与贸易流水做信用背书，无抵押对接周转资金，解决"有订单、没钱生产"的核心卡点。',
+        delivery: '交付形式：融资服务+还款方案',
+        scenarios: ['外贸订单融资', '生产资金周转'],
+      },
+      {
+        id: 'fin-4',
+        name: '投融资资本对接',
+        price: '按需定制',
+        description: '海内外基金匹配+路演辅导',
+        features: ['基金对接', '路演辅导', '通道落地'],
+        details: '依托海内外产业基金、政府引导基金、跨境资本渠道，为优质出海项目提供资本匹配、路演辅导、QFLP/QDLP通道落地、全程投融资对接跟进。',
+        delivery: '交付形式：资本对接+路演辅导',
+        scenarios: ['融资需求', '资本升级'],
+      },
     ],
   },
 ];
 
 export default function ServicesPage() {
+  const [activeTab, setActiveTab] = useState('vibe-marketing');
+  const [selectedProduct, setSelectedProduct] = useState<IProduct | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const activeContent = tabs.find(tab => tab.id === activeTab) || tabs[0];
+
+  const openModal = (product: IProduct) => {
+    setSelectedProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+    setTimeout(() => setSelectedProduct(null), 300);
+  };
+
   return (
     <div className="w-full bg-background">
       <div className="max-w-[90rem] mx-auto px-4 md:px-8 lg:px-16 xl:px-20 py-16 md:py-24 lg:py-32">
-        {/* Section Header */}
-        <div className="text-center mb-12 md:mb-16 lg:mb-20">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: '-80px' }}
-            transition={{ duration: 0.5 }}
-          >
-            <Badge variant="secondary" className="mb-4 md:mb-6 px-4 py-1.5 text-sm md:text-base font-semibold uppercase tracking-widest">
-              CORE BUSINESS · 核心业务
-            </Badge>
-            <h2 className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-bold tracking-tight text-foreground mb-4 md:mb-6">
-              五大业务板块，全链路覆盖
-            </h2>
-            <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-2xl lg:max-w-3xl mx-auto">
-              从品牌营销到供应链情报，从战略咨询到金融服务，AI 驱动的全链路出海服务
-            </p>
-          </motion.div>
-        </div>
+        <motion.div
+          className="text-center mb-12 md:mb-16"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: '-80px' }}
+        >
+          <p className="text-sm md:text-base font-semibold text-primary uppercase tracking-widest mb-4 md:mb-6">
+            CORE BUSINESS · 核心业务
+          </p>
+          <h1 className="text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold tracking-tight text-foreground mb-4 md:mb-6">
+            五大业务板块，全链路覆盖
+          </h1>
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            从品牌营销到供应链情报，从战略咨询到金融服务，AI 驱动的全链路出海服务
+          </p>
+        </motion.div>
 
-        {/* Business Blocks */}
-        <div className="space-y-12 md:space-y-16 lg:space-y-20">
-          {businesses.map((biz, index) => (
-            <motion.div
-              key={biz.id}
-              id={biz.id}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-80px' }}
-              variants={{
-                hidden: {},
-                visible: { transition: { staggerChildren: 0.12 } },
-              }}
+        <div className="flex flex-wrap justify-center gap-3 md:gap-4 mb-8 md:mb-12">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-2 px-4 md:px-6 py-3 rounded-xl font-medium transition-all duration-300 ${
+                activeTab === tab.id
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-card border border-border text-muted-foreground hover:text-foreground hover:border-primary/30'
+              }`}
             >
-              {/* Business Card */}
-              <Card className="overflow-hidden border-border/50 shadow-sm hover:shadow-md transition-shadow duration-300">
-                <CardContent className="p-6 md:p-8 lg:p-10">
-                  {/* Block Header */}
-                  <motion.div variants={fadeInUp} className="mb-6 lg:mb-8">
-                    <Badge className="mb-4 md:mb-5 bg-primary/10 text-primary border-primary/20 hover:bg-primary/15">
-                      {biz.icon}
-                      <span className="ml-2">{biz.label}</span>
-                    </Badge>
-                    <h3 className="text-xl md:text-2xl lg:text-3xl xl:text-4xl font-bold text-foreground mb-3 md:mb-4">
-                      {biz.title}
-                    </h3>
-                    <p className="text-base md:text-lg lg:text-xl text-muted-foreground max-w-3xl lg:max-w-4xl">
-                      {biz.subtitle}
-                    </p>
-                  </motion.div>
-
-                  {/* Pain Point */}
-                  {biz.painPoint && (
-                    <motion.div variants={fadeInUp} className="mb-6 lg:mb-8">
-                      <div className="bg-muted/40 border border-border rounded-lg p-4 md:p-6">
-                        <p className="text-base md:text-lg text-muted-foreground">
-                          {biz.painPoint}
-                        </p>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Steps */}
-                  <div className="space-y-4 lg:space-y-6 mb-6 lg:mb-8">
-                    {biz.steps.map((step, stepIndex) => (
-                      <motion.div key={stepIndex} variants={fadeInUp}>
-                        <div className="flex gap-4 md:gap-6 p-4 rounded-lg hover:bg-muted/30 transition-colors duration-200">
-                          <div className="flex-shrink-0 w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-br from-primary/20 to-success/20 text-primary flex items-center justify-center text-base md:text-lg font-bold shadow-sm">
-                            {stepIndex + 1}
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <CheckCircle2 className="w-5 h-5 text-success flex-shrink-0" />
-                              <h4 className="text-base md:text-lg lg:text-xl font-semibold text-foreground">{step.title}</h4>
-                            </div>
-                            <p className="text-base md:text-lg text-muted-foreground leading-relaxed pl-7">{step.desc}</p>
-                          </div>
-                        </div>
-                      </motion.div>
-                    ))}
-                  </div>
-
-                  {/* Data Anchors */}
-                  {biz.dataAnchors && (
-                    <motion.div variants={fadeInUp} className="mb-6 lg:mb-8">
-                      <div className="flex flex-wrap gap-4 md:gap-6">
-                        {biz.dataAnchors.map((anchor, i) => (
-                          <div key={i} className="flex items-center gap-2 md:gap-3 px-4 py-2.5 bg-primary/5 rounded-lg border border-primary/10">
-                            <span className="text-sm md:text-base font-semibold text-primary">{anchor.label}</span>
-                            <span className="text-sm md:text-base text-muted-foreground">{anchor.value}</span>
-                          </div>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Regions */}
-                  {biz.regions && (
-                    <motion.div variants={fadeInUp} className="mb-6 lg:mb-8">
-                      <div className="flex flex-wrap gap-2 md:gap-3">
-                        {biz.regions.map((region, i) => (
-                          <Badge key={i} variant="secondary" className="px-4 py-1.5 md:px-5 md:py-2 text-sm font-medium">
-                            {region}
-                          </Badge>
-                        ))}
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Golden Quote */}
-                  <motion.div variants={fadeInUp}>
-                    <div className="bg-gradient-to-r from-primary/5 via-primary/3 to-success/5 border border-primary/10 rounded-xl p-5 md:p-6 lg:p-8">
-                      <p className="text-lg md:text-xl lg:text-2xl font-semibold text-foreground">
-                        {biz.goldenQuote}
-                      </p>
-                      {biz.goldenQuoteEn && (
-                        <p className="text-base md:text-lg text-muted-foreground mt-2">{biz.goldenQuoteEn}</p>
-                      )}
-                    </div>
-                  </motion.div>
-                </CardContent>
-              </Card>
-            </motion.div>
+              {tab.icon}
+              <span className="hidden sm:inline">{tab.title}</span>
+            </button>
           ))}
         </div>
+
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            transition={{ duration: 0.3 }}
+            className="space-y-8"
+          >
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:gap-8">
+              <Card className="border-border/50">
+                <CardContent className="p-6 md:p-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+                      {activeContent.icon}
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                        {activeContent.label}
+                      </span>
+                      <h2 className="text-2xl md:text-3xl font-bold text-foreground">{activeContent.title}</h2>
+                    </div>
+                  </div>
+                  <p className="text-lg text-foreground font-semibold mb-2">{activeContent.subtitle}</p>
+                  <p className="text-muted-foreground mb-6">{activeContent.description}</p>
+                  
+                  <div className="bg-gradient-to-r from-primary/5 to-success/5 rounded-xl p-4 md:p-6">
+                    <p className="text-sm md:text-base font-medium text-foreground italic">
+                      "{activeContent.philosophy}"
+                    </p>
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="border-border/50">
+                <CardContent className="p-6 md:p-8">
+                  <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-6">
+                    核心优势
+                  </h3>
+                  <div className="space-y-4">
+                    {activeContent.benefits.map((benefit, index) => (
+                      <div key={index} className="flex gap-4 p-4 rounded-lg bg-muted/30">
+                        <div className="flex-shrink-0 w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                          {benefit.icon}
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-foreground">{benefit.title}</h4>
+                          <p className="text-sm text-muted-foreground">{benefit.desc}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <Card className="border-border/50">
+              <CardContent className="p-6 md:p-8">
+                <h3 className="text-sm font-semibold text-primary uppercase tracking-wider mb-6">
+                  产品与服务
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {activeContent.products.map((product, index) => (
+                    <div
+                      key={index}
+                      className={`p-4 md:p-6 rounded-xl border transition-all hover:shadow-md ${
+                        product.highlight
+                          ? 'border-primary/30 bg-gradient-to-br from-primary/5 to-success/5'
+                          : 'border-border/50 bg-card hover:border-primary/20'
+                      }`}
+                    >
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h4 className="font-semibold text-foreground">{product.name}</h4>
+                          <p className="text-sm text-muted-foreground mt-1">{product.description}</p>
+                        </div>
+                        {product.highlight && (
+                          <Badge className="bg-accent text-accent-foreground text-xs">
+                            <Star className="w-3 h-3 mr-1" />
+                            主推
+                          </Badge>
+                        )}
+                      </div>
+                      <div className="flex items-center justify-between mb-3">
+                        <span className="text-lg font-bold text-primary">{product.price}</span>
+                        <button
+                          onClick={() => openModal(product)}
+                          className="flex items-center gap-1 px-4 py-2 bg-primary/10 text-primary rounded-lg text-sm font-medium hover:bg-primary/20 transition-colors"
+                        >
+                          详情
+                          <ArrowRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        {product.features.map((feature, i) => (
+                          <span
+                            key={i}
+                            className="inline-flex items-center gap-1 text-xs text-muted-foreground"
+                          >
+                            <CheckCircle className="w-3 h-3 text-success" />
+                            {feature}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </motion.div>
+        </AnimatePresence>
+
+        <motion.div
+          className="mt-8 md:mt-12 bg-gradient-to-r from-primary/5 via-success/5 to-accent/5 rounded-3xl p-8 md:p-12"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+        >
+          <div className="text-center">
+            <h3 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground mb-4">
+              一站式AI出海结果服务商
+            </h3>
+            <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto mb-8">
+              从AI商机挖掘、本土化品牌营销、出海战略咨询，到政企资源对接、跨境资金兜底，
+              全覆盖企业出海全生命周期需求
+            </p>
+            <div className="flex flex-wrap justify-center gap-6">
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-success" />
+                <span className="text-foreground font-medium">AI数据托底决策</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-success" />
+                <span className="text-foreground font-medium">独家政企资源落地</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-success" />
+                <span className="text-foreground font-medium">全流程贴身交付</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <CheckCircle className="w-6 h-6 text-success" />
+                <span className="text-foreground font-medium">所有服务包结果</span>
+              </div>
+            </div>
+          </div>
+        </motion.div>
       </div>
+
+      <AnimatePresence>
+        {isModalOpen && selectedProduct && (
+          <>
+            <motion.div
+              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={closeModal}
+            />
+            <motion.div
+              className="fixed inset-x-4 md:inset-x-1/4 lg:inset-x-1/3 top-1/2 -translate-y-1/2 bg-background rounded-2xl shadow-2xl z-50 max-h-[90vh] overflow-y-auto"
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <div className="sticky top-0 bg-background border-b border-border px-6 py-4 flex items-center justify-between z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                    {activeContent.icon}
+                  </div>
+                  <div>
+                    <span className="text-xs font-semibold text-primary uppercase tracking-wider">
+                      {activeContent.label}
+                    </span>
+                    <h3 className="text-lg font-bold text-foreground">{selectedProduct.name}</h3>
+                  </div>
+                </div>
+                <button
+                  onClick={closeModal}
+                  className="w-10 h-10 rounded-full bg-muted hover:bg-muted/80 flex items-center justify-center transition-colors"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-6 md:p-8">
+                <div className="flex items-center gap-4 mb-6">
+                  <span className="text-2xl font-bold text-primary">{selectedProduct.price}</span>
+                  {selectedProduct.highlight && (
+                    <Badge className="bg-accent text-accent-foreground">
+                      <Star className="w-3 h-3 mr-1" />
+                      主推产品
+                    </Badge>
+                  )}
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">
+                    服务详情
+                  </h4>
+                  <p className="text-muted-foreground leading-relaxed">
+                    {selectedProduct.details || '暂无详细描述'}
+                  </p>
+                </div>
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">
+                    交付标准
+                  </h4>
+                  <p className="text-muted-foreground">
+                    {selectedProduct.delivery || '暂无交付标准说明'}
+                  </p>
+                </div>
+
+                {selectedProduct.scenarios && selectedProduct.scenarios.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">
+                      适配场景
+                    </h4>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedProduct.scenarios.map((scenario, i) => (
+                        <Badge key={i} variant="secondary" className="px-4 py-2">
+                          {scenario}
+                        </Badge>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                <div className="mb-6">
+                  <h4 className="text-sm font-semibold text-primary uppercase tracking-wider mb-3">
+                    服务内容
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {selectedProduct.features.map((feature, i) => (
+                      <div key={i} className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+                        <CheckCircle className="w-5 h-5 text-success flex-shrink-0" />
+                        <span className="text-sm text-foreground">{feature}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
+                  <Button className="flex-1 bg-accent hover:bg-accent/90">
+                    立即咨询
+                  </Button>
+                  <Button variant="outline" onClick={closeModal}>
+                    关闭
+                  </Button>
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
